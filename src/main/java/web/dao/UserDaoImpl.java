@@ -1,144 +1,61 @@
 package web.dao;
 
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import web.model.User;
-import web.util.Util;
+
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
+
+
 import java.util.List;
+
 @Repository
-public class UserDaoHibernateImpl implements UserDao {
-    private final static SessionFactory sessionFactory = Util.getInstance().getSessionFactory();
-
-    @PersistenceContext
-
-    EntityManager entityManager;
-
-    public UserDaoHibernateImpl() {
-
-    }
+public class UserDaoImpl implements UserDao {
 
 
-    @Override
-    public void createUsersTable() {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+    private final EntityManager entityManager;
 
-            String sql = "CREATE TABLE IF NOT EXISTS users "
-                    + "(id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20) NOT NULL , "
-                    + "lastName VARCHAR(20) NOT NULL , age SMALLINT NOT NULL)";
-            Query query = session.createSQLQuery(sql).addEntity(User.class);
-            query.executeUpdate();
-
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
+    @Autowired
+    public UserDaoImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
-    public void dropUsersTable() {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+    public void saveUser(User user) {
 
-            String sql = "DROP TABLE IF EXISTS users";
-            session.createSQLQuery(sql).executeUpdate();
+        entityManager.persist(user);
 
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveUser(String name, String lastName, byte age) {
-        User user = new User(name, lastName, age);
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-
-            transaction = session.beginTransaction();
-
-            session.save(user);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
     }
 
     @Override
     public void removeUserById(long id) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
 
-            transaction = session.beginTransaction();
-            User user = session.get(User.class, id);
-            session.delete(user);
+        User user = entityManager.find(User.class, id);
+        entityManager.remove(user);
 
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
     }
 
     @Override
-
+    @SuppressWarnings("unchecked")
     public List<User> getAllUsers() {
-        List<User> userList = new ArrayList<>();
-        userList = entityManager.createQuery("FROM User", User.class).getResultList();
+        return entityManager.createQuery("FROM User").getResultList();
 
-//        Transaction transaction = null;
-//        try (Session session = sessionFactory.openSession()) {
-//
-//            transaction = session.beginTransaction();
-//            userList = session.createQuery("from User").getResultList();
-//
-//            transaction.commit();
-//        } catch (Exception e) {
-//            if (transaction != null) {
-//                transaction.rollback();
-//            }
-//            e.printStackTrace();
-//        }
-        return userList;
+    }
+
+
+    @Override
+    public void updateUser(User user) {
+
+        entityManager.merge(user);
+
     }
 
     @Override
-    public void cleanUsersTable() {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-
-            session.createSQLQuery("TRUNCATE TABLE store.users").executeUpdate();
-
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
+    public User getUserById(long id) {
+        User user = entityManager.find(User.class, id);
+        entityManager.detach(user);
+        return user;
     }
 }

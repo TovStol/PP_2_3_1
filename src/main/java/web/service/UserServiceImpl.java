@@ -1,40 +1,48 @@
-package jm.task.core.jdbc.service;
+package web.service;
 
-import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
-import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
-import jm.task.core.jdbc.model.User;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import web.dao.UserDao;
+import web.model.User;
 
 
 import java.util.List;
 
-
+@Service
 public class UserServiceImpl implements UserService {
-    private final UserDaoHibernateImpl userDaoHibernate = new UserDaoHibernateImpl();
-    private final UserDaoJDBCImpl userDaoJDBC = new UserDaoJDBCImpl();
+    private final UserDao userDao;
 
-    public void createUsersTable() {
-        userDaoHibernate.createUsersTable();
+    @Autowired
+    public UserServiceImpl(UserDao userDao) {
+
+        this.userDao = userDao;
     }
-
-    public void dropUsersTable() {
-        userDaoHibernate.dropUsersTable();
+    @Transactional
+    @Override
+    public void saveUser(User user) {
+        userDao.saveUser(user);
     }
-
-    public void saveUser(String name, String lastName, byte age) {
-        userDaoHibernate.saveUser(name, lastName, age);
-
-    }
-
+    @Transactional
+    @Override
     public void removeUserById(long id) {
-        userDaoHibernate.removeUserById(id);
+        userDao.removeUserById(id);
     }
-
+    @Transactional(readOnly = true)
+    @Override
     public List<User> getAllUsers() {
-        return userDaoHibernate.getAllUsers();
+        return userDao.getAllUsers();
     }
-
-    public void cleanUsersTable() {
-        userDaoHibernate.cleanUsersTable();
+    @Transactional
+    @Override
+    public void updateUser(User user) {
+        userDao.updateUser(user);
+    }
+    @Transactional(readOnly = true)
+    @Override
+    public User getUserById(long id) {
+        return userDao.getUserById(id);
     }
 
 }

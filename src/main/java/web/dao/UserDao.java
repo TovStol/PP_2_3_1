@@ -1,19 +1,18 @@
-package jm.task.core.jdbc.dao;
+package web.dao;
 
-import jm.task.core.jdbc.model.User;
+import web.model.User;
 
 import java.util.List;
 
+
 public interface UserDao {
-    void createUsersTable();
-
-    void dropUsersTable();
-
-    void saveUser(String name, String lastName, byte age);
+    void saveUser(User user);
 
     void removeUserById(long id);
 
     List<User> getAllUsers();
 
-    void cleanUsersTable();
+    void updateUser(User user);
+
+    User getUserById(long id);
 }
