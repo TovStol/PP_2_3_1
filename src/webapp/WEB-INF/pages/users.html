@@ -17,7 +17,7 @@
 
         <div class = "row">
             <div class="col-lg-3">
-                <a th:href="@{/users/new}" class="btn btn-primary btn-sm mb-3"> Add user </a>
+                <a th:href="@{/users/new}" class="btn btn-secondary btn-sm mb-3"> Add user </a>
             </div>
         </div>
 
@@ -29,6 +29,7 @@
             <th> User lastName</th>
             <th> User age</th>
             <th> Action</th>
+            <th> </th>
         </tr>
         </thead>
 
@@ -38,10 +39,14 @@
             <td th:text = "${user.lastName}"></td>
             <td th:text = "${user.age}"></td>
             <td>
-                <a th:href="@{/users/edit/{id} (id=${user.id})}"
-                   class = "btn btn-primary"> Update </a>
-                <a th:href="@{/users/delete/{id} (id=${user.id})}"
-                   class = "btn btn-primary"> Delete </a>
+                <form th:method="GET" th:action="@{/users/edit/{id}(id=${user.id})}">
+                    <input type="submit" value = "Update user"/>
+                </form>
+            </td>
+            <td>
+                <form th:method="DELETE" th:action="@{/users/delete/{id}(id=${user.id})}">
+                    <input type="submit" value = "Delete user"/>
+                </form>
             </td>
         </tr>
         </tbody>

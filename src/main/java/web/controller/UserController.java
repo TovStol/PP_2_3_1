@@ -54,18 +54,13 @@ public class UserController {
 
     @PostMapping(value = "/users/{id}")
     public String updateUser(@PathVariable long id, @ModelAttribute("user") User user) {
-        User existUser = userService.getUserById(id);
-        existUser.setId(id);
-        existUser.setName(user.getName());
-        existUser.setLastName(user.getLastName());
-        existUser.setAge(user.getAge());
-        userService.updateUser(existUser);
+        userService.updateUser(id, user);
         return "redirect:/users";
     }
 
-    @GetMapping(value = "users/delete/{id}")
+    @DeleteMapping(value = "users/delete/{id}")
     public String deleteUser(@PathVariable long id) {
-        userService.removeUserById(id);
+       userService.removeUserById(id);
         return "redirect:/users";
     }
 
